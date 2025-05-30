@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import ImageModal from './ImageModal';
+
 const BookRegister = () => {
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
@@ -9,6 +11,11 @@ const BookRegister = () => {
   const [tags, setTags] = useState([]);
   const [cover, setCover] = useState(null);
   const [preview, setPreview] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
+    // 이미지 모달 열기/닫기
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -61,7 +68,11 @@ const BookRegister = () => {
               )}
             </div>
             <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
-            <button type="button" style={{ marginTop: 10 }}>이미지 등록</button>
+            {/* <button type="button" style={{ marginTop: 10 }}>이미지 등록</button> */}
+                    {/* 이미지 등록 버튼만 변경 */}
+            <button type="button" onClick={openModal} style={{ marginTop: 10 }}>
+                이미지 등록
+            </button>
           </label>
         </div>
 
@@ -161,6 +172,9 @@ const BookRegister = () => {
       }}>
         bottom (copy right, 사업자번호, 대표자 전화번호 등등)
       </footer>
+
+     {/* 모달 */}
+      {showModal && <ImageModal onClose={closeModal} />}
     </div>
   );
 };
