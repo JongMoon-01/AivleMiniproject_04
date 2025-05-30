@@ -11,21 +11,20 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // ✅ 테스트 계정 처리
-    if (email === 'aivle' && password === '07') {
-      alert('테스트 로그인 성공!');
-      navigate('/'); // 홈으로 이동
-      return;
-    }
-
     try {
       const res = await axios.post('http://localhost:8080/api/auth/login', {
         email,
         password,
       });
-      localStorage.setItem('token', res.data.token);
-      alert('로그인 성공!');
-      navigate('/');
+
+      // ✅ 응답에서 token 추출 후 저장
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        alert('로그인 성공!');
+        navigate('/');
+      } else {
+        alert('로그인 실패: 토큰 없음');
+      }
     } catch (err) {
       alert('로그인 실패');
     }
@@ -46,7 +45,7 @@ function LoginPage() {
         <label>
           이메일:
           <input
-            type="text" // ✅ 이메일 형식 체크 제거
+            type="text" // 이메일 형식 검증 제거 (aivle 등 테스트 ID 허용)
             placeholder="이메일 또는 ID"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
