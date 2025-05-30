@@ -2,88 +2,165 @@ import React, { useState } from 'react';
 
 const BookRegister = () => {
   const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const [introduction, setIntroduction] = useState('');
   const [content, setContent] = useState('');
-  const [coverImage, setCoverImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [category, setCategory] = useState('Option 1');
+  const [tags, setTags] = useState([]);
+  const [cover, setCover] = useState(null);
+  const [preview, setPreview] = useState('');
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setCoverImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      setCover(file);
+      setPreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleTagToggle = (tag) => {
+    setTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 여기에 실제 등록 로직을 추가하세요 (예: API 호출)
-    console.log({ title, author, content, coverImage });
+    console.log({ title, subtitle, category, tags, introduction, content, cover });
     alert('도서가 등록되었습니다.');
   };
 
-  const handleCancel = () => {
-    setTitle('');
-    setAuthor('');
-    setContent('');
-    setCoverImage(null);
-    setPreviewUrl('');
-  };
-
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-      <h2>도서 등록</h2>
-      <form onSubmit={handleSubmit}>
+    <div style={{ fontFamily: 'sans-serif' }}>
+      {/* 상단 메뉴바 */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '10px 20px', borderBottom: '1px solid #ccc'
+      }}>
+        <div><strong>Menubar</strong></div>
         <div>
-          <label>도서 제목</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={{ width: '100%' }}
-          />
+          <input type="text" placeholder="Search" />
+          <button style={{ marginLeft: '10px' }}>help</button>
+          <button style={{ marginLeft: '10px' }}>도서 등록</button>
+          <button style={{ marginLeft: '10px' }}>logout</button>
         </div>
+      </div>
 
-        <div>
-          <label>도서 표지</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {previewUrl && (
-            <div style={{ marginTop: '10px' }}>
-              <img src={previewUrl} alt="미리보기" style={{ width: '100%', maxHeight: '300px', objectFit: 'contain' }} />
+      {/* 폼 */}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', padding: 20 }}>
+        {/* 왼쪽: 이미지 등록 */}
+        <div style={{ flex: 1, marginRight: 20 }}>
+          <label>
+            <div style={{ border: '1px solid #ccc', padding: 10, textAlign: 'center' }}>
+              {preview ? (
+                <img src={preview} alt="도서 표지" style={{ width: '100%', height: 'auto' }} />
+              ) : (
+                <div style={{ height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <span>도서 표지</span>
+                </div>
+              )}
             </div>
-          )}
+            <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+            <button type="button" style={{ marginTop: 10 }}>이미지 등록</button>
+          </label>
         </div>
 
-        <div>
-          <label>저자</label>
-          <input
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            required
-            style={{ width: '100%' }}
-          />
-        </div>
+        {/* 오른쪽: 입력 필드들 */}
+        <div style={{ flex: 2 }}>
+          <div>
+            <label>도서 제목(title)</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              style={{ width: '100%', marginBottom: 10 }}
+            />
+          </div>
+          <div>
+            <label>도서 부제목(subtitle)</label>
+            <input
+              type="text"
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              style={{ width: '100%', marginBottom: 10 }}
+            />
+          </div>
 
-        <div>
-          <label>책 내용</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={5}
-            style={{ width: '100%' }}
-            required
-          />
-        </div>
+          <div style={{ marginBottom: 10 }}>
+            <label>카테고리 설정(category)</label><br />
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={{ marginBottom: 5 }}
+            >
+              <option>Option 1</option>
+              <option>Option 2</option>
+              <option>Option 3</option>
+            </select>
+          </div>
 
-        <div style={{ marginTop: '10px' }}>
-          <button type="submit">등록</button>
-          <button type="button" onClick={handleCancel} style={{ marginLeft: '10px' }}>
-            취소
-          </button>
+          <div style={{ marginBottom: 10 }}>
+            <label>태그 설정</label><br />
+            {['#tag1', '#tag2', '#tag3', '#tag4'].map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => handleTagToggle(tag)}
+                style={{
+                  margin: '5px 5px 0 0',
+                  backgroundColor: tags.includes(tag) ? '#007bff' : '#ddd',
+                  color: tags.includes(tag) ? '#fff' : '#000',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+
+          <div>
+            <label>도서 내용(Introduction)</label>
+            <textarea
+              value={introduction}
+              onChange={(e) => setIntroduction(e.target.value)}
+              rows={4}
+              style={{ width: '100%', marginBottom: 10 }}
+            />
+          </div>
+          <div>
+            <label>작가의 말(Content)</label>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={4}
+              style={{ width: '100%', marginBottom: 10 }}
+            />
+          </div>
+
+          <button type="submit" style={{
+            backgroundColor: '#007bff',
+            color: '#fff',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}>도서 등록</button>
         </div>
       </form>
+
+      {/* 하단 */}
+      <footer style={{
+        textAlign: 'center',
+        borderTop: '1px solid #ccc',
+        padding: 10,
+        marginTop: 20,
+        fontSize: '12px'
+      }}>
+        bottom (copy right, 사업자번호, 대표자 전화번호 등등)
+      </footer>
     </div>
   );
 };
