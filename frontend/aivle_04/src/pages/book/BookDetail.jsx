@@ -20,27 +20,6 @@ import {
 
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import SidebarFilter from "../../components/SidebarFilter";
-import BookCard from "../../components/BookCard";
-
-const handleDelete = async () => {
-  const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
-  if (!confirmDelete) return;
-
-  try {
-    // DELETE /books/{id}
-    await axios.delete(`/books/${book.id}`);
-
-    // DELETE /posts/{id}
-    await axios.delete(`/posts/${post.id}`);
-
-    alert("도서 및 감성글이 삭제되었습니다.");
-    navigate("/books"); // 예: 도서 목록으로 이동
-  } catch (error) {
-    console.error("삭제 오류:", error);
-    alert("삭제 중 오류가 발생했습니다.");
-  }
-};
 
 function BookDetail() {
   const { id } = useParams(); // 도서 ID
@@ -50,6 +29,24 @@ function BookDetail() {
   const [error, setError] = useState(""); // ✅ 이 줄이 필요합니다!
   const navigate = useNavigate();
 
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    try {
+      // DELETE /books/{id}
+      await axios.delete(`/books/${id}`);
+
+      // DELETE /posts/{id}
+      await axios.delete(`/posts/${id}`);
+
+      alert("도서 및 감성글이 삭제되었습니다.");
+      navigate("/"); // 예: 도서 목록으로 이동
+    } catch (error) {
+      console.error("삭제 오류:", error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   useEffect(() => {
     const fetchBookAndPost = async () => {
@@ -69,29 +66,29 @@ function BookDetail() {
     fetchBookAndPost();
   }, [id]);
 
-//   useEffect(() => {
-//   const fetchMockData = async () => {
-//     try {
-//       const [bookRes, postRes] = await Promise.all([
-//         fetch('/mock/book.json'),
-//         fetch('/mock/post.json')
-//       ]);
+  //   useEffect(() => {
+  //   const fetchMockData = async () => {
+  //     try {
+  //       const [bookRes, postRes] = await Promise.all([
+  //         fetch('/mock/book.json'),
+  //         fetch('/mock/post.json')
+  //       ]);
 
-//       const bookData = await bookRes.json();
-//       const postData = await postRes.json();
+  //       const bookData = await bookRes.json();
+  //       const postData = await postRes.json();
 
-//       setBook(bookData);
-//       setPost(postData);
-//     } catch (err) {
-//       console.error("Mock 데이터 로딩 실패", err);
-//       setError("Mock 데이터를 불러오지 못했습니다.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  //       setBook(bookData);
+  //       setPost(postData);
+  //     } catch (err) {
+  //       console.error("Mock 데이터 로딩 실패", err);
+  //       setError("Mock 데이터를 불러오지 못했습니다.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-//   fetchMockData();
-// }, []);
+  //   fetchMockData();
+  // }, [id]);
 
   if (loading) {
     return (

@@ -12,7 +12,7 @@ export default function AppRouter() {
         <Route path="/" element={<MainPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/books/:id" element={<BookDetail />} />
-        <Route path="/books/:id/edit" element={<BookEdit />} />
+        {/* <Route path="/books/:id/edit" element={<BookEdit />} /> */}
       </Routes>
     </Router>
   );
