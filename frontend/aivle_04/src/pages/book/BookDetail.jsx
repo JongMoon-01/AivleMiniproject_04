@@ -35,12 +35,12 @@ function BookDetail() {
 
     try {
       // DELETE /books/{id}
-      await axios.delete(`/books/${id}`);
+      //await axios.delete(`/books/${id}`);
 
       // DELETE /posts/{id}
-      await axios.delete(`/posts/${id}`);
+      //await axios.delete(`/posts/${id}`);
 
-      alert("도서 및 감성글이 삭제되었습니다.");
+      //alert("도서 및 감성글이 삭제되었습니다.");
       navigate("/"); // 예: 도서 목록으로 이동
     } catch (error) {
       console.error("삭제 오류:", error);
@@ -48,47 +48,47 @@ function BookDetail() {
     }
   };
 
-  useEffect(() => {
-    const fetchBookAndPost = async () => {
-      try {
-        const bookRes = await axios.get(`/books/${id}`);
-        const postRes = await axios.get(`/posts/${id}`); // 또는 `/api/v1/books/${id}/posts`
-
-        setBook(bookRes.data);
-        setPost(postRes.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookAndPost();
-  }, [id]);
-
-  //   useEffect(() => {
-  //   const fetchMockData = async () => {
+  // useEffect(() => {
+  //   const fetchBookAndPost = async () => {
   //     try {
-  //       const [bookRes, postRes] = await Promise.all([
-  //         fetch('/mock/book.json'),
-  //         fetch('/mock/post.json')
-  //       ]);
+  //       const bookRes = await axios.get(`/books/${id}`);
+  //       const postRes = await axios.get(`/posts/${id}`); // 또는 `/api/v1/books/${id}/posts`
 
-  //       const bookData = await bookRes.json();
-  //       const postData = await postRes.json();
-
-  //       setBook(bookData);
-  //       setPost(postData);
-  //     } catch (err) {
-  //       console.error("Mock 데이터 로딩 실패", err);
-  //       setError("Mock 데이터를 불러오지 못했습니다.");
+  //       setBook(bookRes.data);
+  //       setPost(postRes.data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
   //     } finally {
   //       setLoading(false);
   //     }
   //   };
 
-  //   fetchMockData();
+  //   fetchBookAndPost();
   // }, [id]);
+
+    useEffect(() => {
+    const fetchMockData = async () => {
+      try {
+        const [bookRes, postRes] = await Promise.all([
+          fetch('/mock/book.json'),
+          fetch('/mock/post.json')
+        ]);
+
+        const bookData = await bookRes.json();
+        const postData = await postRes.json();
+
+        setBook(bookData);
+        setPost(postData);
+      } catch (err) {
+        console.error("Mock 데이터 로딩 실패", err);
+        setError("Mock 데이터를 불러오지 못했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMockData();
+  }, [id]);
 
   if (loading) {
     return (
@@ -127,30 +127,32 @@ function BookDetail() {
               이미지 없음
             </Box>
           )}
-          {/* 버튼 그룹 */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 2 }}>
-            <Button variant="outlined" size="small">표지 만들기</Button>
-            <Button variant="outlined" size="small" onClick={() => navigate(`/books/${book.id}/edit`)}>수정</Button>
-            <Button variant="outlined" size="small" color="error" onClick={handleDelete}>삭제</Button>
-          </Box>
+          
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="h5" component="div" gutterBottom>
+                {book.title}
+              </Typography>
+              <Typography color="text.secondary">
+                카테고리: {book.category}
+              </Typography>
+              <Typography color="text.secondary">
+                태그: {book.tag}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                등록일: {book.createdAt || "정보 없음"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                수정일: {book.updatedAt || "정보 없음"}
+              </Typography>
+            </CardContent>
 
-          <CardContent>
-            <Typography variant="h5" component="div" gutterBottom>
-              {book.title}
-            </Typography>
-            <Typography color="text.secondary">
-              카테고리: {book.category}
-            </Typography>
-            <Typography color="text.secondary">
-              태그: {book.tag}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              등록일: {book.createdAt || "정보 없음"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              수정일: {book.updatedAt || "정보 없음"}
-            </Typography>
-          </CardContent>
+            {/* 버튼 그룹 */}
+            <Box sx={{ p: 2, display: "flex", gap: 1 }}>
+              <Button variant="outlined" size="small" onClick={() => navigate(`/books/register`)}>수정</Button>
+              <Button variant="outlined" size="small" color="error" onClick={handleDelete}>삭제</Button>
+            </Box>
+          </Box>
         </Card>
       ) : (
         <Paper sx={{ py: 10, textAlign: "center", color: "gray" }}>
