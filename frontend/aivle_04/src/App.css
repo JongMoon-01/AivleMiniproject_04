@@ -28,18 +28,6 @@ header {
   font-weight: bold;
 }
 
-.search-bar {
-  display: flex;
-  justify-content: center;
-  margin: 15px 0;
-}
-
-.search-bar input {
-  width: 300px;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-}
-
 .book-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -54,30 +42,14 @@ header {
 }
 
 .book-thumbnail {
-  width: 80px;
-  height: 110px;
-  background-color: #444;
+  width: 100px;
+  height: auto;
+  object-fit: contain;
   margin-bottom: 5px;
 }
 
 .book-title {
   font-size: 14px;
-}
-
-.search-layout {
-  display: flex;
-  padding: 20px 50px;
-}
-
-.sidebar-filter {
-  display: flex;
-  gap: 20px;
-  padding-right: 30px;
-}
-
-.filter-column {
-  display: flex;
-  flex-direction: column;
 }
 
 footer {
