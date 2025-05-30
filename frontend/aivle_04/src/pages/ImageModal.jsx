@@ -47,9 +47,9 @@ const ImageModal = ({ onClose }) => {
             padding: '10px',
             marginTop: '5px'
           }}>
-            <strong>Heading</strong>
+            <strong>크큭</strong>
             <p style={{ margin: 0 }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              아몰랑
             </p>
           </div>
         </div>
