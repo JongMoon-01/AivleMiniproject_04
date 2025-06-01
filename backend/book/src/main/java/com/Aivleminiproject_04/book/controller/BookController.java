@@ -26,8 +26,12 @@ public class BookController {
     private final BookService bookService; // 책 삭제
 
     @GetMapping
-    public ResponseEntity<List<BookResponseDto>> getAllBook() {
-        List<BookResponseDto> books = postService.getAllBooks();
+    public ResponseEntity<List<BookResponseDto>> getAllBook(
+            @RequestParam(name = "title", required = false) String titleKeyword,
+            @RequestParam(name = "category", required = false) List<String> categories) {
+
+
+        List<BookResponseDto> books = postService.searchAndFilterBooks(titleKeyword, categories);
 
         return ResponseEntity.ok(books);
     }

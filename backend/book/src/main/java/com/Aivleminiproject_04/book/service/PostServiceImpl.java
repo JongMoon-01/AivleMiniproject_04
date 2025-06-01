@@ -9,8 +9,10 @@ import com.Aivleminiproject_04.book.dto.PostUpdateRequestDto;
 import com.Aivleminiproject_04.book.exception.UnauthorizedException;
 import com.Aivleminiproject_04.book.repository.BookRepository;
 import com.Aivleminiproject_04.book.repository.PostRepository;
+import com.Aivleminiproject_04.book.specification.BookSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -68,6 +70,27 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public List<BookResponseDto> getAllBooks() {
         return bookRepository.findAll().stream()
+                .map(BookResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookResponseDto> searchAndFilterBooks(String titleKeyword, List<String> categories) {
+        Specification<Book> spec = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+
+        if (titleKeyword != null && !titleKeyword.isEmpty()) {
+            spec = spec.and(BookSpecification.titleContains(titleKeyword));
+        }
+
+        if (categories != null && !categories.isEmpty()) {
+            spec = spec.and(BookSpecification.categoryIn(categories));
+        }
+
+        // Specification을 사용하여 BookRepository에서 조회
+        List<Book> filteredBooks = bookRepository.findAll(spec);
+
+        return filteredBooks.stream()
                 .map(BookResponseDto::new)
                 .collect(Collectors.toList());
     }

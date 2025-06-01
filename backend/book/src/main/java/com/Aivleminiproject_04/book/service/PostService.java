@@ -11,6 +11,7 @@ public interface PostService {
     PostResponseDto createPost(PostCreateRequestDto requestDto, String username);
     PostResponseDto getPostById(Long postId);
     List<BookResponseDto> getAllBooks();
+    List<BookResponseDto> searchAndFilterBooks(String titleKeyword, List<String> categories);
     PostResponseDto updatePost(Long postId, PostUpdateRequestDto requestDto, String currentUsername);
     void deletePost(Long postId, String currentUsername);
     // 조회수 증가 메소드
