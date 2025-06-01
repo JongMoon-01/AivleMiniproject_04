@@ -50,7 +50,7 @@ public class UserController {
 //    }
 
     @PostMapping("/login")  // 최종 경로는 /api/auth/login
-    public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto requestDto) {
+    public ResponseEntity<UserLoginResponseDto> login(@Valid @RequestBody UserLoginRequestDto requestDto) {
         String token = userService.login(requestDto);
         UserResponseDto userInfo = userService.getUserInfoByEmail(requestDto.getEmail());
 

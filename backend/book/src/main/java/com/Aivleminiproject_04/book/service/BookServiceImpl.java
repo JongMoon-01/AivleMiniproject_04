@@ -16,7 +16,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteBook(Long bookId, String currentUsername) {
+    public void deleteBook(Long bookId, String currentUserEmail) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + bookId));
 
@@ -24,8 +24,8 @@ public class BookServiceImpl implements BookService {
         if (associatedPost == null) {
             throw new IllegalStateException("Book with id " + bookId + " has no associated post");
         }
-        if (!associatedPost.getWriter().equals(currentUsername)) {
-            throw new UnauthorizedException("당신은 이 책을 삭제할 수 없습니다.");
+        if (!associatedPost.getWriter().getEmail().equals(currentUserEmail)) {
+            throw new UnauthorizedException("이 책을 삭제할 권한이 없습니다.");
         }
 
         bookRepository.delete(book);

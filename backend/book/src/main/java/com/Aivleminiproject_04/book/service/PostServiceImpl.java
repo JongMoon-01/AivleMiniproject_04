@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +33,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostResponseDto createPost(PostCreateRequestDto requestDto, String username) {
-        User writer = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(username + " 유저를 찾을 수 없습니다."));
+    public PostResponseDto createPost(PostCreateRequestDto requestDto, String userEmail) {
+        User writer = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException(userEmail + " 유저를 찾을 수 없습니다."));
 
         Post post = Post.builder()
                 .title(requestDto.getTitle())
@@ -47,6 +48,8 @@ public class PostServiceImpl implements PostService {
                 .writer(writer) // 실제로는 User 객체 조회 후 설정
                 .coverImageUrl(requestDto.getCoverImageUrl()) // URL 직접 받거나 AI 생성 로직 추가
                 .views(0) // 초기 조회수
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         // Post 저장 시 CascadeType.All에 의해 Book도 함께 처리될 수 있도록 Book 객체 생성 및 연결
@@ -105,13 +108,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto requestDto, String currentUsername) {
+    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto requestDto, String currentUserEmail) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
 
         if (post.getWriter() == null ||
-        !post.getWriter().getUsername().equals(currentUsername)) {
-            throw new UnauthorizedException("당신은 이 포스트를 수정할 권한이 없습니다.");
+        !post.getWriter().getEmail().equals(currentUserEmail)) {
+            throw new UnauthorizedException("포스트를 작성한 본인만 수정할 수 있습니다.");
         }
 
         // 빈 문자열일 경우 업데이트 안 함
@@ -146,12 +149,34 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Long postId, String currentUsername) {
+    public PostResponseDto updateCoverImage(Long postId, String coverImageUrl, String currentUserEmail) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
 
-        if (!post.getWriter().equals(currentUsername)) {
-            throw new UnauthorizedException("당신은 이 포스트를 삭제할 수 없습니다.");
+        if (post.getWriter() == null || !post.getWriter().getEmail().equals(currentUserEmail)) {
+            throw new UnauthorizedException("포스트를 작성한 본인만 수정할 수 있습니다.");
+        }
+
+        post.setCoverImageUrl(coverImageUrl);
+        Post updatedPost = postRepository.save(post);
+
+        Book book = bookRepository.findById(updatedPost.getPostId())
+                .orElseThrow(() -> new EntityNotFoundException("연관된 책 찾을 수 없음: " + updatedPost.getPostId()));
+
+        book.syncWithPost(updatedPost);
+        bookRepository.save(book);
+
+        return new PostResponseDto(updatedPost);
+    }
+
+    @Override
+    @Transactional
+    public void deletePost(Long postId, String currentUserEmail) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
+
+        if (!post.getWriter().getEmail().equals(currentUserEmail)) {
+            throw new UnauthorizedException("포스트를 작성한 본인만 삭제할 수 있습니다.");
         }
 
         postRepository.delete(post);

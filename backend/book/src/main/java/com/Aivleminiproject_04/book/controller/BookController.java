@@ -5,6 +5,7 @@ import com.Aivleminiproject_04.book.service.BookService;
 import com.Aivleminiproject_04.book.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 //import com.Aivleminiproject_04.book.service.BookService;
 //import jakarta.validation.Valid;
@@ -36,10 +37,10 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        String mockUsername = "testUser";
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id, Authentication authentication) {
+        String currentUserEmail = authentication.getName();
 
-        bookService.deleteBook(id, mockUsername);
+        bookService.deleteBook(id, currentUserEmail);
 
         return ResponseEntity.noContent().build();
     }
