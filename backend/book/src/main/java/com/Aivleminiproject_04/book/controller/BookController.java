@@ -30,7 +30,6 @@ public class BookController {
             @RequestParam(name = "title", required = false) String titleKeyword,
             @RequestParam(name = "category", required = false) List<String> categories) {
 
-
         List<BookResponseDto> books = postService.searchAndFilterBooks(titleKeyword, categories);
 
         return ResponseEntity.ok(books);
