@@ -41,3 +41,14 @@ frontend/node_modules/
 frontend/dist/
 frontend/build/
 
+# 백엔드 빌드 파일 무시 (혹시 빠졌을 수 있으니 명확히 추가)
+backend/target/
+*.log
+*.class
+*.jar
+*.war
+
+# 환경 변수 파일 무시
+frontend/.env
+backend/.env
+.env

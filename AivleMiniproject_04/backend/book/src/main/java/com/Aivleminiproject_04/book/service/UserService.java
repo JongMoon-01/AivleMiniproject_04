@@ -33,12 +33,16 @@ public class UserService {
 
     public String login(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isPresent() && encoder.matches(password, userOpt.get().getEncrypted_password())) {
-            // 로그인 성공 시 토큰 발급
-            return jwtUtil.generateToken(email);  // jwt 발급
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("존재하지 않는 이메일입니다.");
         }
-        // 실패 시 null 반환 또는 예외 처리
-        throw new RuntimeException("이메일 또는 비밀번호가 잘못되었습니다.");
+
+        User user = userOpt.get();
+        if (!encoder.matches(password, user.getEncrypted_password())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return jwtUtil.generateToken(email);
     }
 
     public UserResponseDto getUserInfo(String email) {

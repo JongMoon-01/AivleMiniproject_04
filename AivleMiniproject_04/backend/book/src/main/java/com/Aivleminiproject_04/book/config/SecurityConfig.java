@@ -4,61 +4,60 @@ import com.Aivleminiproject_04.book.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-    // jwt 자동 필터 적용 위한 코드
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // jwt 자동 필터 적용 위한 코드
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})  // CORS 설정을 아래 corsConfigurationSource에서 정의
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/register",
+                                "/h2-console/**"
+                        ).permitAll()
+                        .requestMatchers("/api/secure").hasRole("USER")  // ROLE_USER 권한 필요
+                        .anyRequest().authenticated()
+                )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // H2 콘솔용
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
 
-    // 패스워드 인코더 Bean 등록
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // jwt 자동 필터 적용 위한 코드로 추가
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/api/login", "/api/register").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .headers().frameOptions().disable()
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // ✅ 필터 등록
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);  // ✅ 쿠키 또는 Authorization 헤더 포함 허용
 
-        return http.build();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
-
-    /* 보안 비활성화 설정 + jwt 자동 필터 적용 위한 코드로 주석처리
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable() // CSRF 비활성화
-                .authorizeHttpRequests()
-                .requestMatchers("/h2-console/**").permitAll() // ✅ H2 콘솔 허용
-                .requestMatchers("/**").permitAll() // 모든 요청 허용
-                .anyRequest().permitAll()
-                .and()
-                .headers().frameOptions().disable() // ✅ H2 콘솔은 iframe을 사용하므로 허용
-                .and()
-                .formLogin().disable(); // 폼 로그인도 비활성화
-
-        return http.build();
-    }
-
-    */
 }
