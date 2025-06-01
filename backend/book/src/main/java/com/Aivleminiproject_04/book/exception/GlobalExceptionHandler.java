@@ -39,6 +39,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<?> handleRuntime(RuntimeException ex) {
+//        return ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body(Map.of("error", ex.getMessage()));
+//    }
+
     // 간단한 에러 응답 DTO
     private static class ErrorResponse {
         private int status;
