@@ -1,9 +1,9 @@
-// src/pages/BookRegisterPage.jsx
+// src/pages/BookEditPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './BookRegisterPage.css'
+import './BookRegisterPage.css';
 
-export default function BookRegisterPage() {
+export default function BookEditPage() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -26,11 +26,8 @@ export default function BookRegisterPage() {
     }, 2000); // 2초 후 로딩 종료 (테스트용)
   };
 
-  const handleRegister = () => {
-    // 여기에 도서 등록 처리 로직이 들어갈 수 있음
-    // 예: 유효성 검사 -> 서버 전송
-
-    // 등록 완료 후 메인 페이지로 이동
+  const handleSaveEdit = () => {
+    // 나중에 수정된 데이터 저장 로직 추가 가능
     navigate('/');
   };
 
@@ -56,17 +53,17 @@ export default function BookRegisterPage() {
         </div>
 
         <div className="right-panel">
-          <div className='form-group-title'>
-            <div className="form-group">
-              <label>도서 제목(Title)</label>
-              <input type="text" placeholder="제목1" />
-            </div>
-
-            <div className="form-group">
-              <label>도서 부제목(Subtitle)</label>
-              <input type="text" placeholder="제목1" />
-            </div>
+          {/* 입력 필드 - 등록 페이지와 동일 */}
+          <div className="form-group">
+            <label>도서 제목(title)</label>
+            <input type="text" placeholder="기존 제목 불러오기" />
           </div>
+
+          <div className="form-group">
+            <label>도서 부제목(subtitle)</label>
+            <input type="text" placeholder="기존 부제목 불러오기" />
+          </div>
+
           <div className="form-group">
             <label>카테고리(Category) + 태그(Tag) 설정</label>
             <div className="category-tags">
@@ -100,7 +97,7 @@ export default function BookRegisterPage() {
           </div>
 
           <div className="form-group">
-            <button className="submit-button" onClick={handleRegister}>도서 등록</button>
+            <button className="submit-button" onClick={handleSaveEdit}>도서 수정</button>
           </div>
         </div>
       </div>
@@ -117,10 +114,9 @@ export default function BookRegisterPage() {
                 x
               </button>
             </div>
-            
+
             {/* 이미지 미리보기 */}
             <div className="modal-image-placeholder">
-              
               {previewImage ? (
                 <div className="image-preview-container">
                   <img
@@ -133,7 +129,7 @@ export default function BookRegisterPage() {
                   <div className='image-placeholder'>미리보기 없음</div>
                 )}
               </div>
-            
+
             {/* 프롬프트 영역 */}
             <p>Prompt</p>
             <div className="prompt-box">
@@ -152,12 +148,12 @@ export default function BookRegisterPage() {
                 )}
 
                 {/* 실제 파일 업로드 */}
-                <label htmlFor="file-upload" className="upload-label">
-                  이미지 업로드
+                <label htmlFor="file-upload-edit" className="upload-label">
+                    이미지 업로드
                 </label>
                   <input
                     type="file"
-                    id="file-upload"
+                    id="file-upload-edit"
                     accept="image/*"
                     style={{ display: 'none' }}
                     onChange={handleImageSelect}
