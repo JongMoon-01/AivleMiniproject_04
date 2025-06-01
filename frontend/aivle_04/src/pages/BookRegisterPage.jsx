@@ -5,6 +5,7 @@ import './BookRegisterPage.css'
 export default function BookRegisterPage() {
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
@@ -12,6 +13,15 @@ export default function BookRegisterPage() {
       const imageURL = URL.createObjectURL(file);
       setPreviewImage(imageURL);
     }
+  };
+
+  const handleGenerateImage = () => {
+    setIsGenerating(true);
+    // 나중에 여기에 이미지 생성 API 요청 추가 가능
+    setTimeout(() => {
+      setIsGenerating(false);
+      // 이미지가 생성되면 previewImage도 설정 가능
+    }, 2000); // 2초 후 로딩 종료 (테스트용)
   };
 
   return (
@@ -48,7 +58,7 @@ export default function BookRegisterPage() {
             </div>
           </div>
           <div className="form-group">
-            <label>카테고리 설정(Category) + 태그설정</label>
+            <label>카테고리(Category) + 태그(Tag) 설정</label>
             <div className="category-tags">
               <select>
                 <option>경제</option>
@@ -89,22 +99,30 @@ export default function BookRegisterPage() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2 style={{ textAlign: 'center' }}>이미지</h2>
+            <div>
+              <button
+                className='delete-preview-button'
+                onClick={() => setPreviewImage(null)}
+              >
+                x
+              </button>
+            </div>
+            
             {/* 이미지 미리보기 */}
             <div className="modal-image-placeholder">
+              
               {previewImage ? (
-                <img
-                  src={previewImage}
-                  alt='preview'
-                  className='preview-image'
-                  onLoad={(e) => {
-                    {/* 이미지 로드 후 자동 크기 반영 */}
-                    console.log('loaded size:', e.target.naturalWidth, e.target.naturalHeight);
-                  }}
-                />
-              ) : (
-                <div style={{textAlign:'center', color:'#888'}}>미리보기 없음</div>
-              )}
-            </div>
+                <div className="image-preview-container">
+                  <img
+                    src={previewImage}
+                    alt='preview'
+                    className='preview-image'
+                  />
+                </div>
+                ) : (
+                  <div className='image-placeholder'>미리보기 없음</div>
+                )}
+              </div>
             
             {/* 프롬프트 영역 */}
             <p>Prompt</p>
@@ -116,7 +134,12 @@ export default function BookRegisterPage() {
 
             {/* 버튼 및 파일 입력 */}
             <div className="modal-buttons">
-              <button>이미지 생성</button>
+                {/* 이미지 생성 */}
+                {isGenerating ? (
+                  <div className="spinner" />
+                ) : (
+                  <button onClick={handleGenerateImage}>이미지 생성</button>
+                )}
 
                 {/* 실제 파일 업로드 */}
                 <label htmlFor="file-upload" className="upload-label">
