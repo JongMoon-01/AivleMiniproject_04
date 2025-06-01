@@ -50,14 +50,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponseDto getPostById(Long postId) {
+        // 조회수 증가, DB용
+        postRepository.incrementViews(postId);
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
 
-        // 조회수 증가
-        post.setViews(post.getViews() + 1);
-        postRepository.save(post);
+        // 조회수 증가, 로컬 객체용
+        // post.setViews(post.getViews() + 1);
 
         return new PostResponseDto(post);
     }
