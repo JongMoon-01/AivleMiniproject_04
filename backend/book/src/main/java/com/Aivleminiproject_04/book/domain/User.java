@@ -15,15 +15,9 @@ public class User {
     @Column(name = "unique_id")
     private String uniqueId;
 
-    // 얘는 어디 쓰는 거임?
-    private String instance_id;
-
     // 작가 이름 추가
     @Column(nullable = false)
     private String username;
-
-    @Column(unique = true, nullable = false)
-    private String id;
 
     @Column(nullable = false)
     private String role;
@@ -37,6 +31,8 @@ public class User {
     private LocalDateTime emailConfirmedAt;
     private LocalDateTime lastSignInAt;
 
+//    private String id;
+//    private String instance_id;
 //    private LocalDateTime invited_at;
 //    private String confirmation_token;
 //    private LocalDateTime confirmation_sent_at;
