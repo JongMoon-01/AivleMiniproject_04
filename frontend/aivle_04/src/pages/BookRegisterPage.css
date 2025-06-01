@@ -99,13 +99,27 @@ select {
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
+img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 또는 cover */
+}
+
+/* 미리보기 이미지가 원래 크기로 표시되도록 */
+.preview-image {
+  display: block;
+  max-width: 100%;
+  height: auto;         /* 이미지 높이를 원본 비율에 따라 자동 조정 */
+  object-fit: contain;  /* 잘리지 않게 */
+}
+
 /* 이미지 자리 */
 .modal-image-placeholder {
-  height: 180px;
+  display: inline-block;   /* 이미지 크기에 맞춤 */
+  padding: 0;
+  margin: 0 auto;          /* 수평 중앙 정렬 (부모가 block이면 적용됨) */
   border: 2px dashed #ccc;
-  margin: 20px 0;
-  /* background: #f4f4f4 url('/path/to/icon.svg') center center no-repeat; */
-  background-size: 50px;
+  background-color: #f4f4f4;
 }
 
 /* 프롬프트 박스 */
@@ -118,7 +132,8 @@ select {
 /* 버튼 정렬 */
 .modal-buttons {
   display: flex;
-  justify-content: space-around;
+  gap: 10px;
+  justify-content: center;
 }
 
 .modal-buttons button {
@@ -136,6 +151,4 @@ select {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  display: inline-block;
-  text-align: center;
 }
