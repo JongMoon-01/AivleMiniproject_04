@@ -32,7 +32,7 @@ public class PostResponseDto {
         this.category = post.getCategory();
         this.publisher = post.getPublisher();
         this.views = post.getViews();
-        this.writer = post.getWriter();
+        this.writer = (post.getWriter() != null) ? post.getWriter().getUsername() : "Unknown";
         this.coverImageUrl = post.getCoverImageUrl();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();

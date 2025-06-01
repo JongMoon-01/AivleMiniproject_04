@@ -43,9 +43,9 @@ public class Post {
 
     private int views; // 조회수, 기본값 0
 
-    @Column(nullable = false)
-    // @ManyToOne(User userWriter;)
-    private String writer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_unique_id", nullable = false)
+    private User writer;
 
     private String coverImageUrl; // Post 생성 시 이미지 URL도 생성/저장
 

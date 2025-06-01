@@ -33,8 +33,8 @@ public class Book {
     @Column(nullable = false)
     private String category;
 
+    // Book은 직접 관계를 가지지 않고 Post에서 가져오기
     @Column(nullable = false)
-    // 일단 유저없이 Book만 진행, 후에 User 엔티티와 연관관계 설정
     private String writer;
 
     @Column(nullable = false)
@@ -50,11 +50,13 @@ public class Book {
 
     // 정적 메소드로 Post 엔티티로부터 Book 객체 쉽게 생성하기
     public static Book fromPost(Post post) {
+        User postWriter = post.getWriter();
+
         return Book.builder()
                 .post(post)
                 .title(post.getTitle())
                 .category(post.getCategory())
-                .writer(post.getWriter())
+                .writer(postWriter != null ? postWriter.getUsername() : "Unknown")
                 .publisher(post.getPublisher())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
@@ -63,9 +65,11 @@ public class Book {
     }
 
     public void syncWithPost(Post post) {
+        User postWriter = post.getWriter();
+
         this.title = post.getTitle();
         this.category = post.getCategory();
-        this.writer = post.getWriter();
+        this.writer = (postWriter != null ? postWriter.getUsername() : "Unknown");
         this.publisher = post.getPublisher();
         this.coverImageUrl = post.getCoverImageUrl();
         this.updatedAt = post.getUpdatedAt();

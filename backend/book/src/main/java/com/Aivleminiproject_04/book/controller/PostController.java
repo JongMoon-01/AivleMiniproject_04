@@ -3,11 +3,13 @@ package com.Aivleminiproject_04.book.controller;
 import com.Aivleminiproject_04.book.dto.PostCreateRequestDto;
 import com.Aivleminiproject_04.book.dto.PostResponseDto;
 import com.Aivleminiproject_04.book.dto.PostUpdateRequestDto;
+import com.Aivleminiproject_04.book.exception.UnauthorizedException;
 import com.Aivleminiproject_04.book.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,9 +19,13 @@ class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto requestDto) {
-        String mockUsername = "testUser"; // 임시 작성자
-        PostResponseDto createdPost = postService.createPost(requestDto, mockUsername);
+    public ResponseEntity<PostResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto requestDto, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("유저 권한 없음");
+        }
+        String username = authentication.getName();
+
+        PostResponseDto createdPost = postService.createPost(requestDto, username);
 
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
@@ -32,17 +38,26 @@ class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @Valid @RequestBody PostUpdateRequestDto requestDto) {
-        String mockUsername = "testUser";
-        PostResponseDto updatedPost = postService.updatePost(id, requestDto, mockUsername);
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @Valid @RequestBody PostUpdateRequestDto requestDto, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("유저 권한 없음");
+        }
+        String username = authentication.getName();
+
+        PostResponseDto updatedPost = postService.updatePost(id, requestDto, username);
 
         return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long id) {
-        String mockUsername = "testUser";
-        postService.deletePost(id, mockUsername);
+    public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long id, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("유저 권한 없음");
+        }
+
+        String username = authentication.getName();
+
+        postService.deletePost(id, username);
 
         return ResponseEntity.noContent().build();
     }

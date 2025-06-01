@@ -2,13 +2,16 @@ package com.Aivleminiproject_04.book.service;
 
 import com.Aivleminiproject_04.book.domain.Book;
 import com.Aivleminiproject_04.book.domain.Post;
+import com.Aivleminiproject_04.book.domain.User;
 import com.Aivleminiproject_04.book.dto.BookResponseDto;
 import com.Aivleminiproject_04.book.dto.PostCreateRequestDto;
 import com.Aivleminiproject_04.book.dto.PostResponseDto;
 import com.Aivleminiproject_04.book.dto.PostUpdateRequestDto;
+import com.Aivleminiproject_04.book.exception.ResourceNotFoundException;
 import com.Aivleminiproject_04.book.exception.UnauthorizedException;
 import com.Aivleminiproject_04.book.repository.BookRepository;
 import com.Aivleminiproject_04.book.repository.PostRepository;
+import com.Aivleminiproject_04.book.repository.UserRepository;
 import com.Aivleminiproject_04.book.specification.BookSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +27,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
-    private final BookRepository bookRepository; // Book 엔티티도 관리해야하기 때문에
+    private final BookRepository bookRepository;// Book 엔티티도 관리해야하기 때문에
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto requestDto, String username) {
+        User writer = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException(username + " 유저를 찾을 수 없습니다."));
+
         Post post = Post.builder()
                 .title(requestDto.getTitle())
                 .subTitle(requestDto.getSubTitle())
@@ -37,15 +44,16 @@ public class PostServiceImpl implements PostService {
                 .content(requestDto.getContent())
                 .category(requestDto.getCategory())
                 .publisher(requestDto.getPublisher())
-                .writer(username) // 실제로는 User 객체 조회 후 설정
+                .writer(writer) // 실제로는 User 객체 조회 후 설정
                 .coverImageUrl(requestDto.getCoverImageUrl()) // URL 직접 받거나 AI 생성 로직 추가
                 .views(0) // 초기 조회수
                 .build();
 
-        Post savedPost = postRepository.save(post);
-
         // Post 저장 시 CascadeType.All에 의해 Book도 함께 처리될 수 있도록 Book 객체 생성 및 연결
         Book book = Book.fromPost(post);
+
+        post.setBookSummary(book);
+        Post savedPost = postRepository.save(post);
         post.setBookSummary(book);
 
         return new PostResponseDto(savedPost);
@@ -101,8 +109,9 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
 
-        if (!post.getWriter().equals(currentUsername)) {
-            throw new UnauthorizedException("당신은 이 포스트를 수정할 수 없습니다.");
+        if (post.getWriter() == null ||
+        !post.getWriter().getUsername().equals(currentUsername)) {
+            throw new UnauthorizedException("당신은 이 포스트를 수정할 권한이 없습니다.");
         }
 
         // 빈 문자열일 경우 업데이트 안 함
