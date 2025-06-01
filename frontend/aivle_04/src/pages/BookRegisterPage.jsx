@@ -1,8 +1,10 @@
 // src/pages/BookRegisterPage.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './BookRegisterPage.css'
 
 export default function BookRegisterPage() {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -22,6 +24,14 @@ export default function BookRegisterPage() {
       setIsGenerating(false);
       // 이미지가 생성되면 previewImage도 설정 가능
     }, 2000); // 2초 후 로딩 종료 (테스트용)
+  };
+
+  const handleRegister = () => {
+    // 여기에 도서 등록 처리 로직이 들어갈 수 있음
+    // 예: 유효성 검사 -> 서버 전송
+
+    // 등록 완료 후 메인 페이지로 이동
+    navigate('/');
   };
 
   return (
@@ -90,7 +100,7 @@ export default function BookRegisterPage() {
           </div>
 
           <div className="form-group">
-            <button className="submit-button">도서 등록</button>
+            <button className="submit-button" onClick={handleRegister}>도서 등록</button>
           </div>
         </div>
       </div>
