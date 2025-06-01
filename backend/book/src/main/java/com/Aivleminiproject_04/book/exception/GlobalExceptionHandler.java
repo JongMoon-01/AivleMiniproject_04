@@ -11,8 +11,8 @@ import java.util.Map;
 @RestControllerAdvice // 모든 @RestController에서 발생하는 예외를 처리
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBookNotFoundException(BookNotFoundException ex) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
