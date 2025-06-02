@@ -115,9 +115,12 @@ img {
 
 /* 이미지 자리 */
 .modal-image-placeholder {
-  display: inline-block;   /* 이미지 크기에 맞춤 */
+  max-width: 40%;         /* 부모 너비보다 넘지 않게 */
+  max-height: 240px;       /* 최대 높이 제한 */
+  display: block;   /* 이미지 크기에 맞춤 */
   padding: 0;
   margin: 0 auto;          /* 수평 중앙 정렬 (부모가 block이면 적용됨) */
+  margin-bottom: 20px; /* 미리보기와 다음 요소 사이 간격 */
   border: 2px dashed #ccc;
   background-color: #f4f4f4;
 }
@@ -143,14 +146,6 @@ img {
   padding: 8px 16px;
   cursor: pointer;
   border-radius: 4px;
-}
-
-.upload-label {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
 .spinner {

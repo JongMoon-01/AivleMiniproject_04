@@ -7,8 +7,13 @@ export default function BookRegisterPage() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [apiKey, setApiKey] = useState('');
+  const [userApiKey, setUserApiKey] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [selectedModel, setSelectedModel] = useState('dall-e-3');
+  const [selectedQuality, setSelectedQuality] = useState('standard');
+  const [selectedStyle, setSelectedStyle] = useState('vivid');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [coverGenerationError, setCoverGenerationError] = useState(null);
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
@@ -26,50 +31,52 @@ export default function BookRegisterPage() {
     navigate('/');
   };
 
-  const generateImageFromPrompt = async (prompt, apiKey) => {
+  const generateImageWithOpenAI = async () => {
+    setCoverGenerationError(null);
+
+    if (!userApiKey || !prompt) {
+      alert('API 키와 프롬프트를 입력하세요.');
+      return;
+    }
+
+  const requestBody = {
+    model: selectedModel,
+    prompt,
+    n: 1,
+    size: '1024x1024',
+    response_format: 'url',
+  };
+
+  if (selectedModel === 'dall-e-3') {
+    requestBody.quality = selectedQuality;
+    requestBody.style = selectedStyle;
+  }
+
     try {
       const response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
         headers: {
+          Authorization: `Bearer ${userApiKey}`,
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          prompt,
-          n: 1,
-          size: '512x512',
-          response_format: 'url',
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        throw new Error('OpenAI API 요청 실패');
+        const errorBody = await response.json();
+        throw new Error(errorBody.error?.message || 'OpenAI 이미지 생성 실패');
       }
 
       const data = await response.json();
-      return data.data[0].url;
+      const url = data?.data?.[0]?.url;
+
+      setCoverImageUrl(url);
+      setPreviewImage(data.data[0].url);
     } catch (err) {
-      throw err;
+      console.error('이미지 생성 실패:', err);
+      setCoverGenerationError(err.message);
     }
   };
-
-  const handleGenerateImage = async () => {
-  if (!apiKey) {
-    alert('먼저 API 키를 입력하세요.');
-    return;
-  }
-
-  setIsGenerating(true);
-  try {
-    const prompt = "책 표지로 쓸 수 있는 판타지 일러스트"; // 👉 사용자 입력값으로 바꿔도 됨
-    const imageUrl = await generateImageFromPrompt(prompt, apiKey);
-    setPreviewImage(imageUrl);
-  } catch (err) {
-    alert('이미지 생성 실패: ' + err.message);
-  } finally {
-    setIsGenerating(false);
-  }
-};
 
   return (
     <div className="book-register-page">
@@ -141,7 +148,8 @@ export default function BookRegisterPage() {
           </div>
         </div>
       </div>
-    {/* 이미지 등록 모달 */}
+
+      {/* 이미지 등록 모달 */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -170,35 +178,47 @@ export default function BookRegisterPage() {
                   <div className='image-placeholder'>미리보기 없음</div>
                 )}
               </div>
-            
-            {/* 프롬프트 영역 */}
-            <p>Prompt</p>
-            <div className="prompt-box">
-              <p>
-                예시) 줄거리에 어울릴만한 책 커버를 만들어 줘.
-              </p>
-            </div>
-            <div className="form-group">
-            <label>OpenAI API 키</label>
-            <input
-              type="password"
-              placeholder="sk-..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
+
+          <div>
+          <input
+            type="password"
+            placeholder="OpenAI API Key"
+            value={userApiKey}
+            onChange={(e) => setUserApiKey(e.target.value)}
+          />
           </div>
 
-            {/* 버튼 및 파일 입력 */}
-            <div className="modal-buttons">
-                {/* 이미지 생성 */}
-                {isGenerating ? (
-                  <div className="spinner" />
-                ) : (
-                  <button onClick={handleGenerateImage}>이미지 생성</button>
-                )}
+          <textarea
+            placeholder="도서 내용을 기반으로 프롬프트 입력"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
 
+          <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>
+            <option value="dall-e-2">dall-e-2</option>
+            <option value="dall-e-3">dall-e-3</option>
+          </select>
+
+          <select value={selectedQuality} onChange={(e) => setSelectedQuality(e.target.value)}>
+            <option value="standard">standard</option>
+            <option value="hd">hd</option>
+          </select>
+
+          <select value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)}>
+            <option value="vivid">vivid</option>
+            <option value="natural">natural</option>
+          </select>
+
+          <button onClick={generateImageWithOpenAI}>이미지 생성</button>
+
+          {coverGenerationError && (
+            <p style={{ color: 'red' }}>❗ {coverGenerationError}</p>
+          )}
+
+            {/* 버튼 및 파일 입력 */}
+            <button>
                 {/* 실제 파일 업로드 */}
-                <label htmlFor="file-upload" className="upload-label">
+                <label htmlFor="file-upload">
                   이미지 업로드
                 </label>
                   <input
@@ -208,7 +228,7 @@ export default function BookRegisterPage() {
                     style={{ display: 'none' }}
                     onChange={handleImageSelect}
                   />
-            </div>
+            </button>
           </div>
         </div>
       )}
