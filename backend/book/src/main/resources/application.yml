@@ -12,7 +12,7 @@ spring:
 
     jpa:
         hibernate:
-            ddl-auto: update
+            ddl-auto: create  # 기존 테이블을 삭제하고 새로 생성
         show-sql: true
 
 jwt:

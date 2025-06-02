@@ -78,6 +78,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostResponseDto> getAllPosts() {
+        return postRepository.findAll().stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
     @Transactional(readOnly = true)
     public List<BookResponseDto> getAllBooks() {
         return bookRepository.findAll().stream()

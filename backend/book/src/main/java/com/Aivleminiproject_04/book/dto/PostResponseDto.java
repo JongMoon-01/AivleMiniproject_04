@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class PostResponseDto {
     private Long postId;
     private String title;
-    private String subTitle;
+    private String subtitle;
     private String synopsis;
     private String comment;
     private String content;
@@ -25,7 +25,7 @@ public class PostResponseDto {
     public PostResponseDto(Post post) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
-        this.subTitle = post.getSubTitle();
+        this.subtitle = post.getSubTitle();
         this.synopsis = post.getSynopsis();
         this.comment = post.getComment();
         this.content = post.getContent();

@@ -18,51 +18,32 @@ import {
   Box,
   Button
 } from "@mui/material";
+import axiosInstance from "../api/axiosInstance";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 function BookDetail() {
   const { id } = useParams(); // 도서 ID
-  const [book, setBook] = useState(null);
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(""); // ✅ 이 줄이 필요합니다!
   const navigate = useNavigate();
 
-  const handleDelete = async () => {
-    const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
-    if (!confirmDelete) return;
-
+  useEffect(() => {
+  const fetchBookAndPost = async () => {
     try {
-      // DELETE /books/{id}
-      //await axios.delete(`/books/${id}`);
-
-      // DELETE /posts/{id}
-      //await axios.delete(`/posts/${id}`);
-
-      //alert("도서 및 감성글이 삭제되었습니다.");
-      navigate("/"); // 예: 도서 목록으로 이동
+      const postRes = await axiosInstance.get(`/api/posts/${id}`);
+      setPost(postRes.data);
+      console.log("✅ 서버에서 받은 post", postRes.data);  // 🔥 이 줄 추가
     } catch (error) {
-      console.error("삭제 오류:", error);
-      alert("삭제 중 오류가 발생했습니다.");
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const fetchBookAndPost = async () => {
-      try {
-        const bookRes = await axios.get(`/books/${id}`);
-        const postRes = await axios.get(`/posts/${id}`); // 또는 `/api/v1/books/${id}/posts`
-
-        setBook(bookRes.data);
-        setPost(postRes.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookAndPost();
-  }, [id]);
+  fetchBookAndPost();
+}, [id]);
 
   if (loading) {
     return (
@@ -73,14 +54,16 @@ function BookDetail() {
   }
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
-
-      {book ? (
+      <Header />
+      <Box sx={{ flex: 1 }}>
+      {post ? (
+        <div>
         <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: 4 }}>
-          {book.coverImageUrl ? (<CardMedia
+         {post.coverImageUrl ? (<CardMedia
             component="img"
             sx={{ width: 200, height: 300, objectFit: "cover", borderRadius: 1 }}
-            image={book.coverImageUrl}
-            alt={book.title}
+            image={post.coverImageUrl}
+            alt={post.title}
           />) : (
             <Box
               sx={{
@@ -99,43 +82,6 @@ function BookDetail() {
               이미지 없음
             </Box>
           )}
-          
-          <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="h5" component="div" gutterBottom>
-                {book.title}
-              </Typography>
-              <Typography color="text.secondary">
-                카테고리: {book.category}
-              </Typography>
-              <Typography color="text.secondary">
-                태그: {book.tag}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                등록일: {book.createdAt || "정보 없음"}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                수정일: {book.updatedAt || "정보 없음"}
-              </Typography>
-            </CardContent>
-
-            {/* 버튼 그룹 */}
-            <Box sx={{ p: 2, display: "flex", gap: 1 }}>
-              <Button variant="outlined" size="small" onClick={() => navigate(`/books/register`)}>수정</Button>
-              <Button variant="outlined" size="small" color="error" onClick={handleDelete}>삭제</Button>
-            </Box>
-          </Box>
-        </Card>
-      ) : (
-        <Paper sx={{ py: 10, textAlign: "center", color: "gray" }}>
-          <Typography variant="h6">도서 정보를 찾을 수 없습니다.</Typography>
-          <Typography variant="body2">
-            해당 도서가 삭제되었거나 존재하지 않을 수 있습니다.
-          </Typography>
-        </Paper>
-      )}
-      <Box sx={{ flex: 1 }}>
-      {post ? (
         <Paper sx={{ p: 4 }}>
           <Typography variant="h6" gutterBottom>
             {post.title}
@@ -144,25 +90,24 @@ function BookDetail() {
             {post.subtitle}
           </Typography>
           <Divider sx={{ my: 2 }} />
-          <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            {post.comment}
+          </Typography>
+        </Paper>
+        </Card> 
+        <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
             {post.content}
           </Typography>
-
-          {post.recommendation && (
-            <Box mt={3} p={2} bgcolor="#e3f2fd" borderLeft="4px solid #2196f3">
-              <Typography variant="body2" color="primary">
-                📘 추천 도서: {post.recommendation}
-              </Typography>
-            </Box>
-          )}
-        </Paper>
+          </div>
       ) : (
         <Typography variant="body2" sx={{ mt: 4, color: "gray" }}>
-          관련된 감성글이 없습니다.
+          관련된 도서가 없습니다.
         </Typography>
       )}
       </Box>
 
+
+      <Footer />
 
     </Container>
   );

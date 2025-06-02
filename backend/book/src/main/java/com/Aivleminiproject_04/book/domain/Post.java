@@ -46,7 +46,8 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_unique_id", nullable = false)
     private User writer;
-
+    
+    @Column(name = "cover_image_url", length = 1000)
     private String coverImageUrl; // Post 생성 시 이미지 URL도 생성/저장
 
     @CreationTimestamp

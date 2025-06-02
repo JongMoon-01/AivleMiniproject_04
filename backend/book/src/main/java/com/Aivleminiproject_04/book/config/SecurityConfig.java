@@ -41,7 +41,10 @@ public class SecurityConfig {
                                 "/h2-console/**"
                         ).permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/books/**", "/api/posts/{id}").permitAll()
+                        // ✅ 게시글 관련 권한 허용 (등록된 도서 목록 확인용)
+                        .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+
                         .requestMatchers("/api/auth/secure", "/api/auth/me").hasRole("USER")  // ROLE_USER 권한 필요
                         .anyRequest().authenticated()
                 )
@@ -59,7 +62,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000"));
-
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);  // ✅ 쿠키 또는 Authorization 헤더 포함 허용

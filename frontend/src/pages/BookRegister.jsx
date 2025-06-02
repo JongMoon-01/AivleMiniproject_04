@@ -58,35 +58,45 @@ const BookRegister = () => {
       setIsGenerating(false);
     }
   };
- 
+  const token = localStorage.getItem('token');
   const handleRegister = async () => {
-    if (!title || !synopsis || !comment || !content) {
-      alert('필수 항목을 모두 입력해주세요.');
-      return;
-    }
- 
-    const postData = {
-      title,
-      subTitle,
-      synopsis,
-      comment,
-      content,
-      category,
-      publisher,
-      coverImageUrl: previewImage,
-    };
- 
-    try {
-      setIsGenerating(true);
-      await axios.post('http://localhost:8080/api/posts', postData);
-      alert('도서가 성공적으로 등록되었습니다.');
-      navigate('/');
-    } catch (error) {
-      alert('도서 등록에 실패했습니다: ' + (error.response?.data.message || error.message));
-    } finally {
-      setIsGenerating(false);
-    }
+  if (!title || !synopsis || !comment || !content) {
+    alert('필수 항목을 모두 입력해주세요.');
+    return;
+  }
+
+  const postData = {
+    title,
+    subTitle,
+    synopsis,
+    comment,
+    content,
+    category,
+    publisher,
+    coverImageUrl: previewImage,
   };
+
+  const token = localStorage.getItem('token'); // ✅ Bearer 포함된 토큰 가져오기
+  if (!token) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+
+  try {
+    setIsGenerating(true);
+    await axios.post('http://localhost:8080/api/posts', postData, {
+      headers: {
+        Authorization: token, // ✅ 헤더에 포함
+      },
+    });
+    alert('도서가 성공적으로 등록되었습니다.');
+    navigate('/');
+  } catch (error) {
+    alert('도서 등록에 실패했습니다: ' + (error.response?.data.message || error.message));
+  } finally {
+    setIsGenerating(false);
+  }
+};
  
   return (
     <>

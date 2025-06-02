@@ -1,13 +1,33 @@
 // src/components/BookResultList.jsx
-import React from 'react';
-import BookCard from './BookCard';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const BookResultList = ({ books }) => {
-  if (books.length === 0) return <p>검색 결과가 없습니다.</p>;
+  const navigate = useNavigate();
+
+  const handleClick = (postId) => {
+    navigate(`/books/${postId}`);
+  };
+
   return (
-    <div className="book-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", padding: "20px" }}>
       {books.map((book) => (
-        <BookCard key={book.id} id={book.id} title={book.title} image={book.image} />
+        <div
+          key={book.postId}
+          onClick={() => handleClick(book.postId)}
+          style={{
+            width: "150px",
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <img
+            src={book.coverImageUrl}
+            alt={book.title}
+            style={{ width: "100%", height: "220px", objectFit: "cover", borderRadius: "4px" }}
+          />
+          <p style={{ marginTop: "8px" }}>{book.title}</p>
+        </div>
       ))}
     </div>
   );

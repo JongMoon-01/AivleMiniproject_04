@@ -39,7 +39,7 @@ public class Book {
 
     @Column(nullable = false)
     private String publisher;
-
+    @Column(name = "cover_image_url", length = 1000)
     private String coverImageUrl;
 
     @Column(nullable = false, updatable = false)

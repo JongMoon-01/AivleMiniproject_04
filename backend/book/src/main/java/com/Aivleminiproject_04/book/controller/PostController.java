@@ -1,5 +1,5 @@
 package com.Aivleminiproject_04.book.controller;
-
+import java.util.List;
 import com.Aivleminiproject_04.book.dto.CoverImageUpdateRequestDto;
 import com.Aivleminiproject_04.book.dto.PostCreateRequestDto;
 import com.Aivleminiproject_04.book.dto.PostResponseDto;
@@ -62,6 +62,11 @@ class PostController {
         PostResponseDto updatedPost = postService.updateCoverImage(id, requestDto.getCoverImageUrl(), currentUserEmail);
 
         return ResponseEntity.ok(updatedPost);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
     @DeleteMapping("/{id}")
