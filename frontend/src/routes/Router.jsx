@@ -6,6 +6,7 @@ import BookRegister from '../pages/BookRegister';
 import MyUploads from '../pages/MyUploads';
 import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
+import BookDetail from '../pages/BookDetail';
 
 export default function AppRouter() {
   return (
@@ -17,6 +18,7 @@ export default function AppRouter() {
         <Route path="/my-uploads" element={<MyUploads />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/books/:id" element={<BookDetail />} />
       </Routes>
     </Router>
   );
