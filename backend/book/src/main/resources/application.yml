@@ -19,3 +19,8 @@ jwt:
     secret: "YourVeryLongAndSecureSecretKeyForHS256AlgorithmAtLeast32BytesLong"
     expiration:
         ms: 3600000 # 1시간
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.validation: DEBUG

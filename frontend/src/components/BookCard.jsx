@@ -1,11 +1,11 @@
 // src/components/BookCard.jsx
 import React from 'react';
 
-const BookCard = () => {
+const BookCard = ({ title, image }) => {
   return (
     <div className="book-card">
-      <div className="book-thumbnail" />
-      <div className="book-title">책제목</div>
+      <img src={image} alt={title} className="book-thumbnail" />
+      <div className="book-title">{title}</div>
     </div>
   );
 };

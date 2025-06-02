@@ -1,40 +1,46 @@
-// 회원가입 페이지, 홍승우
+// 회원가입 페이지
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance'; // ✅ axiosInstance import
+import axiosInstance from '../api/axiosInstance';
 import './SignupPage.css';
 
 function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
-    }
+  if (password !== confirmPassword) {
+    alert('비밀번호가 일치하지 않습니다.');
+    return;
+  }
 
-    try {
-      await axiosInstance.post('/api/auth/signup', {
-        username,
-        email,
-        nickname,
-        password,
-      });
-
-      alert('회원가입 성공!');
-      navigate('/login');
-    } catch (err) {
-      alert('회원가입 실패: ' + (err.response?.data?.message || '서버 오류'));
-    }
+  const payload = {
+    username,
+    email,
+    password
   };
+
+  console.log("📦 보내는 값:", payload); // 디버깅 확인
+
+  try {
+    const res = await axiosInstance.post('/api/auth/signup', payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    alert('회원가입 성공!');
+    navigate('/login');
+  } catch (err) {
+    console.error("❌ 에러:", err.response);
+    alert('회원가입 실패: ' + (err.response?.data?.message || '서버 오류'));
+  }
+};
 
   return (
     <div className="signup-container">
@@ -63,15 +69,6 @@ function SignupPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          별명:
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
             required
           />
         </label>

@@ -37,7 +37,7 @@ public class SecurityConfig {
                                 "/index.html",
                                 "/error",
                                 "/api/auth/login",
-                                "/api/auth/register",
+                                "/api/auth/signup",
                                 "/h2-console/**"
                         ).permitAll()
 

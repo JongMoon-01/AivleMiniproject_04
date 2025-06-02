@@ -30,7 +30,7 @@ public class UserController {
 //        return ResponseEntity.ok("회원가입 성공");
 //    }
 
-    @PostMapping("/register")
+    @PostMapping("/signup")
     public ResponseEntity<String> register(@Valid @RequestBody UserRegisterRequestDto requestDto) {
         userService.register(requestDto);
         return ResponseEntity.ok("회원가입 성공");
