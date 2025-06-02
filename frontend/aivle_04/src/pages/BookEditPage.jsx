@@ -8,6 +8,7 @@ export default function BookEditPage() {
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [apiKey, setApiKey] = useState('');
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
@@ -17,19 +18,56 @@ export default function BookEditPage() {
     }
   };
 
-  const handleGenerateImage = () => {
-    setIsGenerating(true);
-    // 나중에 여기에 이미지 생성 API 요청 추가 가능
-    setTimeout(() => {
-      setIsGenerating(false);
-      // 이미지가 생성되면 previewImage도 설정 가능
-    }, 2000); // 2초 후 로딩 종료 (테스트용)
-  };
-
   const handleSaveEdit = () => {
     // 나중에 수정된 데이터 저장 로직 추가 가능
     navigate('/');
   };
+
+  const generateImageFromPrompt = async (prompt, apiKey) => {
+    try {
+      const response = await fetch('https://api.openai.com/v1/images/generations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          prompt,
+          n: 1,
+          size: '512x512',
+          response_format: 'url',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('OpenAI API 요청 실패');
+      }
+
+      const data = await response.json();
+      return data.data[0].url;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const handleGenerateImage = async () => {
+  if (!apiKey) {
+    alert('먼저 API 키를 입력하세요.');
+    return;
+  }
+
+  setIsGenerating(true);
+  try {
+    const prompt = "책 표지로 쓸 수 있는 판타지 일러스트"; // 👉 사용자 입력값으로 바꿔도 됨
+    const imageUrl = await generateImageFromPrompt(prompt, apiKey);
+    setPreviewImage(imageUrl);
+  } catch (err) {
+    alert('이미지 생성 실패: ' + err.message);
+  } finally {
+    setIsGenerating(false);
+  }
+};
+
 
   return (
     <div className="book-register-page">
@@ -137,6 +175,15 @@ export default function BookEditPage() {
                 예시) 줄거리에 어울릴만한 책 커버를 만들어 줘.
               </p>
             </div>
+            <div className="form-group">
+            <label>OpenAI API 키</label>
+            <input
+              type="password"
+              placeholder="sk-..."
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+            />
+          </div>
 
             {/* 버튼 및 파일 입력 */}
             <div className="modal-buttons">
