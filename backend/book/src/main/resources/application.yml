@@ -15,3 +15,7 @@ spring:
             ddl-auto: update
         show-sql: true
 
+jwt:
+    secret: "YourVeryLongAndSecureSecretKeyForHS256AlgorithmAtLeast32BytesLong"
+    expiration:
+        ms: 3600000 # 1시간

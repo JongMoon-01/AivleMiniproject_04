@@ -17,28 +17,61 @@ import java.time.LocalDateTime;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookId;
+    private Long bookId; // Post의 postId 값을 여기에 저장하고 PK로 사용
 
+    // Book이 Post에 의존
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    // Post의 PK(postId)를 FK로 가짐
+    @MapsId // Post의 ID를 Book의 ID로 매핑
+    @JoinColumn(name = "bookId")
+    private Post post;
+
+    // 아래 필드들 모두 Post 엔티티의 값으로 동기화
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
-    private String content;
-
-    // 일단 유저없이 Book만 진행, 후에 User 엔티티와 연관관계 설정
-    private String writer;
-
     private String category;
 
-    private String tag;
+    // Book은 직접 관계를 가지지 않고 Post에서 가져오기
+    @Column(nullable = false)
+    private String writer;
+
+    @Column(nullable = false)
+    private String publisher;
 
     private String coverImageUrl;
 
-    @CreationTimestamp
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    // 정적 메소드로 Post 엔티티로부터 Book 객체 쉽게 생성하기
+    public static Book fromPost(Post post) {
+        User postWriter = post.getWriter();
+
+        return Book.builder()
+                .post(post)
+                .title(post.getTitle())
+                .category(post.getCategory())
+                .writer(postWriter != null ? postWriter.getUsername() : "Unknown")
+                .publisher(post.getPublisher())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .coverImageUrl(post.getCoverImageUrl())  // 별도 로직 또는 Post에서 가져옴
+                .build();
+    }
+
+    public void syncWithPost(Post post) {
+        User postWriter = post.getWriter();
+
+        this.title = post.getTitle();
+        this.category = post.getCategory();
+        this.writer = (postWriter != null ? postWriter.getUsername() : "Unknown");
+        this.publisher = post.getPublisher();
+        this.coverImageUrl = post.getCoverImageUrl();
+        this.updatedAt = post.getUpdatedAt();
+    }
 }

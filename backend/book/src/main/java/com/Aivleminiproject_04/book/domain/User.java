@@ -15,17 +15,27 @@ public class User {
     @Column(name = "unique_id")
     private String uniqueId;
 
-    private String instance_id;
-    private String id;
-    private String role;
-    private String email;
-    private String encrypted_password;
+    // 작가 이름 추가
+    @Column(nullable = false)
+    private String username;
 
-    private LocalDateTime email_confirmed_at;
-    private LocalDateTime invited_at;
-    private String confirmation_token;
-    private LocalDateTime confirmation_sent_at;
-    private String recovery_token;
-    private LocalDateTime recovery_sent_at;
-    private LocalDateTime last_sign_in_at;
+    @Column(nullable = false)
+    private String role;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    private LocalDateTime emailConfirmedAt;
+    private LocalDateTime lastSignInAt;
+
+//    private String id;
+//    private String instance_id;
+//    private LocalDateTime invited_at;
+//    private String confirmation_token;
+//    private LocalDateTime confirmation_sent_at;
+//    private String recovery_token;
+//    private LocalDateTime recovery_sent_at;
 }
