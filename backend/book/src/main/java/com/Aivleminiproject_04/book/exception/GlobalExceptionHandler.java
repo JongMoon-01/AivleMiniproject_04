@@ -65,4 +65,16 @@ public class GlobalExceptionHandler {
         public int getStatus() { return status; }
         public String getMessage() { return message; }
     }
+
+
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntime(RuntimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+
+
 }

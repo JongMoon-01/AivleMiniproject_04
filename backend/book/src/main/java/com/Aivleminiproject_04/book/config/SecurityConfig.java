@@ -3,6 +3,7 @@ package com.Aivleminiproject_04.book.config;
 import com.Aivleminiproject_04.book.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,6 +40,7 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/h2-console/**"
                         ).permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/api/books/**", "/api/posts/{id}").permitAll()
                         .requestMatchers("/api/auth/secure", "/api/auth/me").hasRole("USER")  // ROLE_USER 권한 필요
                         .anyRequest().authenticated()
@@ -57,6 +59,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000"));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);  // ✅ 쿠키 또는 Authorization 헤더 포함 허용
