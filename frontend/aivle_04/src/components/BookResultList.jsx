@@ -7,7 +7,7 @@ const BookResultList = ({ books }) => {
   return (
     <div className="book-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
       {books.map((book) => (
-        <BookCard key={book.id} title={book.title} image={book.image} />
+        <BookCard key={book.id} id={book.id} title={book.title} image={book.image} />
       ))}
     </div>
   );
