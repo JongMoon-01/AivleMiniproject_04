@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance'; // ✅ axiosInstance import
+import Header from '../components/Header';
 import './LoginPage.css';
+import Footer from '../components/Footer';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -35,15 +37,15 @@ function LoginPage() {
 
   return (
     <div className="login-container">
-      <header className="login-header">
+      {/* <header className="login-header">
         <div className="logo">Logo</div>
         <nav>
           <a href="#">Help</a>
           <a href="/signup">Register</a>
           <a href="/login">Login</a>
         </nav>
-      </header>
-
+      </header> */}
+      <Header />
       <form className="login-form" onSubmit={handleLogin}>
         <label>
           이메일:
@@ -66,6 +68,8 @@ function LoginPage() {
         </label>
         <button type="submit">로그인</button>
       </form>
+
+      <Footer />
     </div>
   );
 }

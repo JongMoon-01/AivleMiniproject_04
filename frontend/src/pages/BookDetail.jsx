@@ -27,7 +27,6 @@ function BookDetail() {
   const [error, setError] = useState(""); // ✅ 이 줄이 필요합니다!
   const navigate = useNavigate();
 
-  console.log("book detail")
   const handleDelete = async () => {
     const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
     if (!confirmDelete) return;

@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import './SignupPage.css';
-
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -44,14 +45,15 @@ function SignupPage() {
 
   return (
     <div className="signup-container">
-      <header className="signup-header">
+      {/* <header className="signup-header">
         <div className="logo">Logo</div>
         <nav>
           <a href="#">Help</a>
           <a href="/signup">Register</a>
           <a href="/login">Login</a>
         </nav>
-      </header>
+      </header> */}
+      <Header />
 
       <form className="signup-form" onSubmit={handleSignup}>
         <label>
@@ -92,6 +94,8 @@ function SignupPage() {
         </label>
         <button type="submit">가입</button>
       </form>
+
+      <Footer />
     </div>
   );
 }
