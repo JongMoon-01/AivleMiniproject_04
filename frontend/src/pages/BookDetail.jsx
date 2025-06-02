@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import books from "../data/books"
 
 import {
   Container,
@@ -18,9 +19,6 @@ import {
   Button
 } from "@mui/material";
 
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
-
 function BookDetail() {
   const { id } = useParams(); // 도서 ID
   const [book, setBook] = useState(null);
@@ -29,6 +27,7 @@ function BookDetail() {
   const [error, setError] = useState(""); // ✅ 이 줄이 필요합니다!
   const navigate = useNavigate();
 
+  console.log("book detail")
   const handleDelete = async () => {
     const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
     if (!confirmDelete) return;
@@ -48,46 +47,22 @@ function BookDetail() {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchBookAndPost = async () => {
-  //     try {
-  //       const bookRes = await axios.get(`/books/${id}`);
-  //       const postRes = await axios.get(`/posts/${id}`); // 또는 `/api/v1/books/${id}/posts`
-
-  //       setBook(bookRes.data);
-  //       setPost(postRes.data);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchBookAndPost();
-  // }, [id]);
-
-    useEffect(() => {
-    const fetchMockData = async () => {
+  useEffect(() => {
+    const fetchBookAndPost = async () => {
       try {
-        const [bookRes, postRes] = await Promise.all([
-          fetch('/mock/book.json'),
-          fetch('/mock/post.json')
-        ]);
+        const bookRes = await axios.get(`/books/${id}`);
+        const postRes = await axios.get(`/posts/${id}`); // 또는 `/api/v1/books/${id}/posts`
 
-        const bookData = await bookRes.json();
-        const postData = await postRes.json();
-
-        setBook(bookData);
-        setPost(postData);
-      } catch (err) {
-        console.error("Mock 데이터 로딩 실패", err);
-        setError("Mock 데이터를 불러오지 못했습니다.");
+        setBook(bookRes.data);
+        setPost(postRes.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMockData();
+    fetchBookAndPost();
   }, [id]);
 
   if (loading) {
@@ -99,8 +74,6 @@ function BookDetail() {
   }
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
-      <Header/>
-      {/* <SidebarFilter/> */}
 
       {book ? (
         <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: 4 }}>
@@ -191,8 +164,6 @@ function BookDetail() {
       )}
       </Box>
 
-
-      <Footer/>
 
     </Container>
   );

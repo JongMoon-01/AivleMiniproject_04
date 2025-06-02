@@ -7,6 +7,7 @@ import SearchPage from './pages/SearchPage';
 import MyLibrary from './pages/MyLibrary';
 import BookRegister from './pages/BookRegister';
 import MyUploads from './pages/MyUploads';
+import BookDetail from './pages/BookDetail';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/my-uploads" element={<MyUploads />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/books/:id" element={<BookDetail />} />
         </Routes>
       </Router>
     </AuthProvider>
